@@ -1,0 +1,17 @@
+{
+  "createId": "cr_f667bcbd32984851b63e5f35b114f9e4",
+  "userId": "usr_LltJkpmyMc7EiqlogY_UqQ",
+  "apiKeyId": "key_9UhZ_spcNi6Korca6a817Q",
+  "expectedEventPda": "CW8qMhCFEZARSUFzPT1p3UjhMEgGXz6JCSa8otc1dDdG",
+  "paymentUsdc": "50000000",
+  "liquidityInjectionUsdc": "10000000",
+  "platformRevenueUsdc": "40000000",
+  "marketType": "standard",
+  "expiresAt": "2026-10-08T07:26:04.038338Z",
+  "blockhashExpiryHintSec": 60,
+  "feeUsdc": "50.00",
+  "liquidityUsdc": "10.00",
+  "platformUsdc": "40.00",
+  "wallet": "967XJFkDyRNuVgwAji8u94wFhQkLwDu4UGQbciQXyuv",
+  "question": "Will BTC close above $150,000 on 2026-12-31?"
+}

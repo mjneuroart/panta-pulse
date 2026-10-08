@@ -1,0 +1,26 @@
+{
+  "createId": "cr_f667bcbd32984851b63e5f35b114f9e4",
+  "expectedEventPda": "CW8qMhCFEZARSUFzPT1p3UjhMEgGXz6JCSa8otc1dDdG",
+  "transaction": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAIEQISbVlHDCSw4w9gPjAqYcEXvLDt…(tronqué)",
+  "recentBlockhash": "GjY3KE3NmDMD1md7CxSG1af2QfF43Wo4pP2mjWTmD4MG",
+  "lastValidBlockHeight": 432513346,
+  "blockhashExpiryHintSec": 60,
+  "buildFingerprint": "08d98ec288b4f5ef0217fa6113fff2f647786b3b1d9bb6339d7003c3ec207d8b",
+  "paymentUsdc": "50000000",
+  "liquidityInjectionUsdc": "10000000",
+  "platformRevenueUsdc": "40000000",
+  "marketType": "standard",
+  "derived": {
+    "event": "CW8qMhCFEZARSUFzPT1p3UjhMEgGXz6JCSa8otc1dDdG",
+    "vaultAuthority": "C3Vtgvv7CgWEfd2a6ZpLCSvq5dtqdaBtQUsK1A2NLNkt",
+    "marketConfig": "8mJjfx7SuWwS4yfVZXtqC2cvzxr3TQHsCgKyjpuDWKAP",
+    "creatorWhitelist": "3hh4H3AdyqmSeJhyPq2h7Pro2t8QrC7iwYgC8YRDLgGt",
+    "creatorFeeVault": "HdB8Z41BbR2DXUSNoTFuzXH2NsnxS7aAodJgEmUgmFK7",
+    "creatorPosition": "9BVqbwGfZooBVWpwVhn87PW6J7YyLtoaEyANvRG1S3QN",
+    "creatorTokenAccount": "FhPVbNDrZgfTgVzWsueSd1w4TNyq4cS2ree8YkF7bhgV",
+    "vaultTokenAccount": "3ygqp5Ja8R2wRcnaQP6dfH6nBiLNvJip9HQmnhnKDR4e",
+    "treasuryTokenAccount": "9hwZLD2JZuWFDDQXEnHsnny7EF2LeyHqwcMFVssYEGpC"
+  },
+  "expiresAt": "2026-10-08T07:22:04.320916Z",
+  "feeUsdc": "50.00"
+}

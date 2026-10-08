@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panta Pulse — AI market intelligence for prediction markets</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root { --bg:#0a0c11; --panel:#12151e; --panel2:#171b26; --line:#232838; --text:#e8ecf4; --muted:#8b93a7; --accent:#8b5cf6; --accent2:#2dd4bf; --chip:#1d2333; --warn:#fbbf24; --bad:#f87171; --ok:#34d399; }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%, rgba(139,92,246,.18), transparent), var(--bg); color:var(--text); font:15px/1.55 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;color:#0a0c11}
+h1{font-size:20px;margin:0;letter-spacing:.2px}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.pill{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12px;color:var(--muted);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:#f59e0b}
+.dot.ok{background:var(--ok)} .dot.err{background:var(--bad)}
+.card{background:linear-gradient(180deg, rgba(255,255,255,.02), transparent), var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:22px}
+.card h2{font-size:14px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.card h2 .hint{text-transform:none;letter-spacing:0;font-weight:400}
+#brief p{margin:0 0 10px}
+#brief strong{color:#d9d3ff}
+.btn{background:linear-gradient(135deg,var(--accent),#6366f1);border:0;color:white;font-weight:600;border-radius:10px;padding:10px 16px;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:wait}
+/* signals */
+.signals{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.sig h3{font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:0 0 10px;display:flex;align-items:center;gap:6px}
+.sig .row{display:flex;gap:8px;align-items:baseline;padding:7px 0;border-top:1px dashed var(--line);font-size:13px}
+.sig .row:first-of-type{border-top:0}
+.sig .row .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sig .row .v{color:var(--muted);font-size:12px;white-space:nowrap}
+.sig .row .v.hot{color:var(--warn)}
+.sig .empty{color:var(--muted);font-size:13px;font-style:italic}
+.sig .cat{font-size:10.5px;color:#c4b5fd;background:var(--chip);border:1px solid #2c3350;border-radius:999px;padding:1px 7px;margin-right:6px;white-space:nowrap}
+/* controls */
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.search{flex:1 1 220px;min-width:160px;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px;font:inherit;font-size:14px}
+.search:focus{outline:1px solid var(--accent)}
+select{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;font-size:14px}
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{cursor:pointer;white-space:nowrap;font-size:12px;padding:5px 12px;border-radius:999px;background:var(--chip);color:#c4b5fd;border:1px solid #2c3350;user-select:none}
+.chip.off{color:var(--muted);border-color:var(--line);background:transparent}
+.chip.on{background:linear-gradient(135deg,var(--accent),#6366f1);color:#fff;border-color:transparent}
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.m{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:9px;min-height:120px}
+.m img{width:100%;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:#0d0f16}
+.m .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip2{font-size:11px;padding:3px 9px;border-radius:999px;background:var(--chip);color:#c4b5fd;border:1px solid #2c3350}
+.phase{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:auto}
+.phase.open,.phase.primary,.phase.primary_active{color:#5eead4;border-color:#134e4a}
+.phase.secondary,.phase.secondary_active{color:var(--warn);border-color:#4a3a13}
+.phase.resolved{color:#8b93a7;opacity:.75}
+.m h3{font-size:14px;margin:0;font-weight:600;line-height:1.35}
+.m .price{font-size:12px;color:var(--accent2)}
+.m .meta{color:var(--muted);font-size:12px;margin-top:auto;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cd{white-space:nowrap}
+.cd.soon{color:var(--warn)} .cd.now{color:var(--bad)} .cd.done{opacity:.7}
+#noRes{display:none;color:var(--muted);text-align:center;padding:18px 0}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
+footer a{color:#a5b4fc}
+@media (max-width:640px){
+  .wrap{padding:18px 12px 40px}
+  header{gap:10px}
+  .pill{margin-left:0;order:3;width:100%;justify-content:center}
+  .card{padding:15px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .m img{height:96px}
+  h1{font-size:18px}
+}
+/* market creation assistant */
+.cf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cf .full{grid-column:1/-1}
+.cf label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+.cf input,.cf textarea,.cf select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 11px;font:inherit;font-size:13.5px}
+.cf textarea{min-height:58px;resize:vertical}
+.cf input:focus,.cf textarea:focus{outline:1px solid var(--accent)}
+.cf .row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rpt{margin-top:14px;font-size:13px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel2);display:none}
+.rpt .kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap;align-items:center}
+.rpt .kv:last-child{border-bottom:0}
+.rpt code{font-size:11px;word-break:break-all;color:#c4b5fd}
+.rpt textarea{width:100%;min-height:52px;background:#0d0f16;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px;font:11px/1.4 ui-monospace,monospace}
+.cfstatus.ok{color:var(--ok)} .cfstatus.err{color:var(--bad)}
+@media (max-width:640px){.cf{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+  <div class="logo">P</div>
+  <div><h1>Panta Pulse</h1><div class="sub">AI market intelligence for Panta prediction markets</div></div>
+  <div class="pill"><span class="dot" id="dot"></span><span id="status">connecting…</span></div>
+</header>
+
+<div class="card">
+  <h2>AI Market Brief</h2>
+  <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+    <button class="btn" id="genBtn">Generate briefing</button>
+    <span id="briefMeta" class="sub"></span>
+  </div>
+  <div id="brief" class="sub">Press “Generate briefing” — the desk reads live markets and writes the brief.</div>
+</div>
+
+<div class="card">
+  <h2>Signals <span class="hint" id="sigHint">· trade tape 24h + catalog deltas</span></h2>
+  <div class="signals">
+    <div class="sig" id="sigNew"><h3>🆕 New markets</h3><div class="body"></div></div>
+    <div class="sig" id="sigMovers"><h3>🔥 Movers</h3><div class="body"></div></div>
+    <div class="sig" id="sigEnding"><h3>⏳ Ending soon</h3><div class="body"></div></div>
+  </div>
+</div>
+
+<div class="card" id="createCard">
+  <h2>Market creation assistant <span class="hint">· real Panta create flow — quote → build → sign in your wallet → register</span></h2>
+  <div class="cf">
+    <div class="full"><label>Wallet (fee payer &amp; signer, base58)</label>
+      <input id="cfWallet" placeholder="Your Solana wallet address" autocomplete="off" spellcheck="false"></div>
+    <div class="full"><label>Question</label>
+      <input id="cfQuestion" maxlength="512" placeholder="e.g. Will BTC close above $150,000 on 2026-12-31?"></div>
+    <div><label>Category</label><select id="cfCategory"></select></div>
+    <div><label>Market type</label><select id="cfType"><option value="standard">standard</option><option value="breaking">breaking</option></select></div>
+    <div><label>Start time (local)</label><input id="cfStart" type="datetime-local"></div>
+    <div><label>End time (local)</label><input id="cfEnd" type="datetime-local"></div>
+    <div><label>Resolution time (local)</label><input id="cfRes" type="datetime-local"></div>
+    <div><label>Image URL (public, square 1024px best)</label><input id="cfImage" placeholder="https://…"></div>
+    <div class="full"><label>Resolution rule</label><textarea id="cfRule" maxlength="2048" placeholder="How the market resolves: data source, cutoff, edge cases"></textarea></div>
+    <div class="full"><label>Sources of truth (one per line, max 20)</label><textarea id="cfSources" placeholder="https://example.com/data"></textarea></div>
+    <div><label>Title</label><input id="cfTitle" maxlength="200" placeholder="Short market title"></div>
+    <div><label>Description (optional)</label><input id="cfDesc" maxlength="2000"></div>
+    <div class="full row2">
+      <button class="btn" id="cfQuote">1 · Quote (live fee)</button>
+      <button class="btn" id="cfBuild" disabled>2 · Build unsigned tx</button>
+      <span class="sub cfstatus" id="cfStatus"></span>
+    </div>
+  </div>
+  <div class="rpt" id="cfReport"></div>
+  <div class="sub" style="margin-top:10px">Quote and build are <b>real live Panta API calls</b> (server-side key). The desk never signs and never holds keys: sign &amp; broadcast the returned transaction in your wallet, then <b>register</b> completes the market. Quotes expire in ~60s — build right after quoting. <a href="https://docs.panta.market/api-reference/markets/overview" target="_blank" rel="noopener">Create-market docs</a> · <a href="https://docs.panta.market" target="_blank" rel="noopener">Powered by Panta</a></div>
+</div>
+
+<div class="card">
+  <h2>Live markets <span id="mkCount" class="sub"></span></h2>
+  <div class="controls">
+    <input class="search" id="q" type="search" placeholder="Search markets…" autocomplete="off">
+    <select id="sort" title="Sort">
+      <option value="soon">Sort: ending soonest</option>
+      <option value="new">Sort: newest</option>
+      <option value="vol">Sort: highest volume</option>
+      <option value="az">Sort: A→Z</option>
+    </select>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+  <div id="noRes">No markets match — clear the search or pick another category.</div>
+</div>
+
+<footer>Panta Pulse — built for the Panta API Sidetrack · <a href="https://panta.market" target="_blank" rel="noopener">Powered by Panta</a></footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+// Sécurité : toute chaîne non fiable (titres marchés, brief, URLs d'images) passe par esc() avant innerHTML.
+const dot=$('dot'), status=$('status');
+function setStatus(t,cls){status.textContent=t; dot.className='dot'+(cls?' '+cls:'');}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function mdLite(t){
+  return esc(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/^#+\s*(.+)$/gm,'<strong>$1</strong>').split(/\n{2,}/).map(b=>'<p>'+b.replace(/\n/g,'<br>')+'</p>').join('');
+}
+function fmtLeft(s){
+  if(s<=0) return 'ended';
+  const d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), ss=s%60;
+  if(d>0) return d+'d '+h+'h';
+  if(h>0) return h+'h '+m+'m';
+  if(m>0) return m+'m '+ss+'s';
+  return ss+'s';
+}
+function cdClass(s){ if(s<=0) return 'done'; if(s<3600) return 'now'; if(s<86400) return 'soon'; return ''; }
+function fmtMeta(l){ return '<span class="lbl">'+esc(l)+'</span>'; }
+function volStr(v){ if(v==null) return ''; return v>=1000 ? (v/1000).toFixed(1)+'k USDC' : v.toFixed(2)+' USDC'; }
+
+let ALL=[], CAT='all';
+
+/* ---------- signals ---------- */
+function sigRow(title, cat, right, cls){
+  const t = title ? esc(title) : '<i>(untitled market)</i>';
+  return '<div class="row"><span class="t"><span class="cat">'+esc(cat)+'</span>'+t+'</span><span class="v '+(cls||'')+'">'+right+'</span></div>';
+}
+async function loadSignals(){
+  try{
+    const r=await fetch('/api/signals'); const d=await r.json();
+    // new
+    let h='';
+    for(const m of (d.newMarkets||[]).slice(0,5)){
+      const ageH=Math.max(0,Math.round((Date.now()/1000-(m.firstSeen||0))/3600));
+      h+=sigRow(m.title,m.category, ageH<1?'just added':'seen '+ageH+'h ago','');
+    }
+    $('sigNew').querySelector('.body').innerHTML = h || '<div class="empty">nothing new in 72h</div>';
+    // movers
+    h='';
+    for(const m of (d.movers||[]).slice(0,5)){
+      const vol=(m.vol24h!=null?m.vol24h:m.deltaSinceBoot);
+      let meta=[];
+      if(m.vol24h!=null) meta.push('24h '+volStr(m.vol24h)); else if(m.deltaSinceBoot) meta.push('Δ '+volStr(m.deltaSinceBoot));
+      if(m.trades24h) meta.push(m.trades24h+' trades');
+      if(!meta.length && m.volume) meta.push(volStr(m.volume));
+      h+=sigRow(m.title,m.category,esc(meta.join(' · ')||'—'),'hot');
+    }
+    $('sigMovers').querySelector('.body').innerHTML = h || '<div class="empty">no trade activity yet</div>';
+    // ending
+    h='';
+    for(const m of (d.endingSoon||[]).slice(0,5)){
+      h+='<div class="row"><span class="t"><span class="cat">'+esc(m.category)+'</span>'+(m.title?esc(m.title):'<i>(untitled market)</i>')+'</span><span class="v cd" data-endts="'+m.endTs+'">'+fmtLeft(m.secondsLeft)+'</span></div>';
+    }
+    $('sigEnding').querySelector('.body').innerHTML = h || '<div class="empty">nothing pending</div>';
+    $('sigHint').textContent = '· live '+d.liveCount+' / '+d.catalogSize+' · updated '+new Date(d.generatedAt*1000).toLocaleTimeString();
+  }catch(e){ /* signals are best-effort */ }
+}
+
+/* ---------- catalog ---------- */
+function renderChips(){
+  const counts={};
+  for(const m of ALL) counts[m.category]=(counts[m.category]||0)+1;
+  const cats=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const c=$('chips'); c.innerHTML='';
+  const mk=(name,label,n)=>{const el=document.createElement('span');el.className='chip'+(CAT===name?' on':' off');el.textContent=label+(n!=null?' '+n:'');el.onclick=()=>{CAT=name;renderChips();renderGrid();};c.appendChild(el);};
+  mk('all','All',ALL.length);
+  for(const cat of cats) mk(cat,cat,counts[cat]);
+}
+function sortMarkets(list, mode){
+  const nul=(v)=>v==null? Number.POSITIVE_INFINITY:0;
+  const arr=list.slice();
+  if(mode==='soon') arr.sort((a,b)=>{ const ar=a.resolved?1:0, br=b.resolved?1:0; if(ar!==br) return ar-br; if(!a.resolved){return (a.endTs??1e12)-(b.endTs??1e12);} return (b.endTs??0)-(a.endTs??0); });
+  else if(mode==='new') arr.sort((a,b)=>nul(b.startTs)-nul(a.startTs));
+  else if(mode==='vol') arr.sort((a,b)=>(b.volume??-1)-(a.volume??-1));
+  else arr.sort((a,b)=>(a.title||'\uffff').localeCompare(b.title||'\uffff'));
+  return arr;
+}
+function renderGrid(){
+  const q=$('q').value.trim().toLowerCase();
+  let list=ALL.filter(m=> (CAT==='all'||m.category===CAT));
+  if(q) list=list.filter(m=>(m.title||'').toLowerCase().includes(q)||m.id.toLowerCase().includes(q)||(m.category||'').includes(q));
+  list=sortMarkets(list,$('sort').value);
+  $('mkCount').textContent='('+list.length+'/'+ALL.length+')';
+  $('noRes').style.display=list.length?'none':'block';
+  const g=$('grid'); g.innerHTML='';
+  for(const m of list){
+    const el=document.createElement('div'); el.className='m';
+    const st=(m.status||'').toLowerCase().replace('_active','');
+    const cd=m.resolved?'':(m.endTs?'<span class="cd '+cdClass(m.endTs-Math.floor(Date.now()/1000))+'" data-endts="'+m.endTs+'" title="ends '+esc(m.endTime||'')+'">⏳ '+fmtLeft(m.endTs-Math.floor(Date.now()/1000))+'</span>':'');
+    const price=(!m.resolved&&m.yesPrice>0&&m.yesPrice<=1)?'<div class="price">YES '+Math.round(m.yesPrice*100)+'%</div>':'';
+    const vol=m.volume?'<span>'+volStr(m.volume)+'</span>':'';
+    el.innerHTML=`${m.image?`<img src="${esc(m.image)}" loading="lazy" alt="" onerror="this.style.display='none'">`:''}
+      <div class="top"><span class="chip2">${esc(m.category)}</span><span class="phase ${esc(st)}">${esc(st)}</span></div>
+      <h3>${m.title?esc(m.title):'<i style="color:#8b93a7">Untitled market — '+esc((m.id||'').slice(0,8))+'…</i>'}</h3>
+      ${price}
+      <div class="meta"><span>${vol}</span>${cd}</div>`;
+    g.appendChild(el);
+  }
+}
+function tickCountdowns(){
+  const now=Math.floor(Date.now()/1000);
+  for(const el of document.querySelectorAll('[data-endts]')){
+    const s=parseInt(el.getAttribute('data-endts'),10)-now;
+    el.textContent='⏳ '+fmtLeft(s);
+    el.className=el.className.replace(/\b(soon|now|done)\b/g,'').trim();
+    const c=cdClass(s); if(c) el.classList.add(c);
+  }
+}
+
+/* ---------- brief ---------- */
+async function genBrief(force){
+  const b=$('genBtn'); b.disabled=true; $('brief').innerHTML='<i>analyzing live markets…</i>';
+  try{
+    const r=await fetch('/api/briefing'+(force?'?force=1':'')); const d=await r.json();
+    $('brief').innerHTML=mdLite(d.brief||'');
+    $('briefMeta').textContent=(d.model||'')+' · '+new Date((d.generatedAt||0)*1000).toLocaleTimeString();
+  }catch(e){ $('brief').textContent='error generating briefing'; }
+  b.disabled=false;
+}
+async function loadMarkets(){
+  try{
+    const r=await fetch('/api/markets'); const d=await r.json();
+    ALL=d.items||[];
+    setStatus('API live · '+d.liveCount+' live / '+d.count+' markets','ok');
+    renderChips(); renderGrid();
+  }catch(e){ setStatus('API error','err'); }
+}
+
+$('genBtn').onclick=()=>genBrief(1);
+$('q').addEventListener('input',renderGrid);
+$('sort').addEventListener('change',renderGrid);
+loadMarkets(); loadSignals();
+setInterval(tickCountdowns,1000);
+setInterval(()=>{ if(document.visibilityState==='visible'){ loadMarkets(); loadSignals(); } },180000);
+if(new URLSearchParams(location.search).has('brief')) genBrief(0);
+/* ---------- market creation assistant (Panta create flow) ---------- */
+let CF={createId:null,wallet:null};
+function cfRow(k,v){ return '<div class="kv"><span>'+k+'</span><b>'+v+'</b></div>'; }
+function cfShow(html){ const r=$('cfReport'); r.style.display='block'; r.innerHTML=html; }
+function cfSetStatus(t,cls){ const s=$('cfStatus'); s.textContent=t||''; s.className='sub cfstatus'+(cls?' '+cls:''); }
+function dtLocal(unix){ const d=new Date(unix*1000); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); }
+function cfTimes(){
+  const now=Math.floor(Date.now()/1000);
+  if(!$('cfStart').value) $('cfStart').value=dtLocal(now+2*3600);
+  if(!$('cfEnd').value) $('cfEnd').value=dtLocal(now+7*86400);
+  if(!$('cfRes').value) $('cfRes').value=dtLocal(now+7*86400+3600);
+}
+function cfUnix(id){ const v=$(id).value; return v?Math.floor(new Date(v).getTime()/1000):null; }
+async function cfLoadCfg(){
+  try{
+    const r=await fetch('/api/create/config'); const d=await r.json();
+    $('cfCategory').innerHTML=(d.categories||[]).map(c=>'<option>'+esc(c)+'</option>').join('');
+    if(d.canCreateMarkets===true) cfSetStatus('key '+d.apiEnv+' · creation enabled ✓','ok');
+    else if(d.canCreateMarkets===false) cfSetStatus('key '+d.apiEnv+' · creation NOT permitted','err');
+    else cfSetStatus('key '+(d.apiEnv||'?'));
+  }catch(e){ cfSetStatus('config unavailable','err'); }
+}
+function cfError(d,status){ return cfRow('Error',esc(d.code||('HTTP '+status)))+(d.message?cfRow('Message',esc(d.message)):'')+(d.fields?cfRow('Fields','<code>'+esc(JSON.stringify(d.fields))+'</code>'):''); }
+async function cfQuote(){
+  const payload={
+    wallet:$('cfWallet').value.trim(),
+    question:$('cfQuestion').value.trim(),
+    resolutionRule:$('cfRule').value.trim(),
+    sourcesOfTruth:$('cfSources').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    category:$('cfCategory').value,
+    startTime:cfUnix('cfStart'),endTime:cfUnix('cfEnd'),resolutionTime:cfUnix('cfRes'),
+    imageUrl:$('cfImage').value.trim(),
+    title:$('cfTitle').value.trim(),description:$('cfDesc').value.trim(),
+    marketType:$('cfType').value
+  };
+  $('cfQuote').disabled=true; cfSetStatus('quoting… (live API)');
+  try{
+    const r=await fetch('/api/create/quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();
+    if(r.status!==200){ cfSetStatus('quote failed: '+(d.code||r.status),'err'); cfShow(cfError(d,r.status)); return; }
+    CF.createId=d.createId; CF.wallet=payload.wallet;
+    $('cfBuild').disabled=false;
+    cfSetStatus('quoted ✓ — build within ~60s','ok');
+    cfShow(cfRow('createId','<code>'+esc(d.createId||'')+'</code>')
+      +cfRow('Creation fee','<b>'+esc(d.feeUsdc||'?')+' USDC</b> (liquidity '+esc(d.liquidityUsdc||'?')+' + platform '+esc(d.platformUsdc||'?')+')')
+      +cfRow('Event PDA','<code>'+esc(d.expectedEventPda||'')+'</code>')
+      +cfRow('Expires (UTC)','<code>'+esc(d.expiresAt||'')+'</code>')
+      +cfRow('Next','Step 2 — build the unsigned transaction'));
+  }catch(e){ cfSetStatus('quote error','err'); }
+  finally{ $('cfQuote').disabled=false; }
+}
+async function cfBuild(){
+  if(!CF.createId){ cfSetStatus('quote first','err'); return; }
+  $('cfBuild').disabled=true; cfSetStatus('building unsigned tx…');
+  try{
+    const r=await fetch('/api/create/build',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({createId:CF.createId,wallet:CF.wallet})});
+    const d=await r.json();
+    if(r.status!==200){ cfSetStatus('build failed: '+(d.code||r.status),'err'); cfShow(cfError(d,r.status)); return; }
+    cfSetStatus('built ✓ — sign in your wallet','ok');
+    cfShow(cfRow('Creation fee','<b>'+esc(d.feeUsdc||'?')+' USDC</b> (liquidity '+esc(d.liquidityUsdc||'?')+' + platform '+esc(d.platformUsdc||'?')+')')
+      +cfRow('Transaction (base64)','<textarea readonly>'+esc(d.transaction||'')+'</textarea>')
+      +cfRow('Recent blockhash','<code>'+esc(d.recentBlockhash||'')+'</code>')
+      +cfRow('Last valid block height',esc(String(d.lastValidBlockHeight||'')))
+      +cfRow('Build fingerprint','<code>'+esc(d.buildFingerprint||'')+'</code>')
+      +cfRow('Derived event','<code>'+esc((d.derived||{}).event||'')+'</code>')
+      +cfRow('Next','Step 3 — sign + broadcast in your wallet (blockhash valid ~60s), then paste the signature and register'));
+    $('cfReport').insertAdjacentHTML('beforeend',
+      '<div class="kv"><span>Register (after broadcast)</span><span><input id="cfSig" style="min-width:200px" placeholder="transaction signature"><button class="btn" id="cfReg" style="margin-left:8px">3 · Register</button></span></div>');
+    $('cfReg').onclick=cfRegister;
+  }catch(e){ cfSetStatus('build error','err'); }
+}
+async function cfRegister(){
+  const sig=$('cfSig')?$('cfSig').value.trim():'';
+  if(!sig){ cfSetStatus('paste the broadcast signature first','err'); return; }
+  cfSetStatus('registering…');
+  try{
+    const r=await fetch('/api/create/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({createId:CF.createId,signature:sig})});
+    const d=await r.json();
+    if(r.status!==200){ cfSetStatus('register: '+(d.code||r.status),'err'); return; }
+    cfSetStatus('registered ✓','ok');
+    cfShow(cfRow('Market','<b>registered</b> · '+esc(d.marketId||d.id||'')));
+  }catch(e){ cfSetStatus('register error','err'); }
+}
+$('cfQuote').onclick=cfQuote;
+$('cfBuild').onclick=cfBuild;
+cfTimes(); cfLoadCfg();
+</script>
+</body></html>

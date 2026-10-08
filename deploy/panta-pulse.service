@@ -1,0 +1,15 @@
+# Panta Pulse — service systemd user (référence ; unité active : ~/.config/systemd/user/panta-pulse.service)
+# Persistance : loginctl enable-linger root (déjà actif) → démarre au boot, 127.0.0.1:8090 uniquement.
+[Unit]
+Description=Panta Pulse — staging local (bounty Colosseum)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/root/bounty/panta/app
+ExecStart=/root/bounty/panta/app/.venv/bin/uvicorn backend.main:app --host 127.0.0.1 --port 8090
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

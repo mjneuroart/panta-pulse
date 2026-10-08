@@ -1,0 +1,27 @@
+# Panta Pulse — BROUILLON de mise en ligne publique (NE PAS ACTIVER sans GO explicite de Mike).
+#
+# Contexte : Caddy tourne déjà sur le VPS (relay + portal). Ce bloc s'ajouterait
+# au /etc/caddy/Caddyfile (fichier système → l'écrire depuis le terminal, pas via write_file).
+#
+# Pré-requis avant activation :
+#   1. GO explicite de Mike (aucune exposition publique sans lui).
+#   2. Vérifier que la mention « Powered by Panta » est visible (elle l'est sur le front).
+#   3. `systemctl --user status panta-pulse` = active.
+#
+# Étape d'activation (le jour du GO) :
+#   sudo tee -a /etc/caddy/Caddyfile <<'EOF'
+#   (bloc ci-dessous, sans le préfixe #)
+#   EOF
+#   systemctl reload caddy
+#   curl -sS https://<domaine>/healthz   # doit répondre {"ok":true,...}
+
+# panta.168-231-106-101.sslip.io {
+#     reverse_proxy 127.0.0.1:8090
+#     encode gzip
+# }
+#
+# Variante avec basic auth (comme le portail / si on veut garder la démo privée) :
+# panta.168-231-106-101.sslip.io {
+#     basicauth { mike <hash> }   # hash via `caddy hash-password`
+#     reverse_proxy 127.0.0.1:8090
+# }

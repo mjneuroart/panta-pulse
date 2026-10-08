@@ -1,0 +1,5 @@
+app/.venv/
+app/data/
+__pycache__/
+*.pyc
+*.log
