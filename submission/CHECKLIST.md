@@ -37,3 +37,9 @@
 - Contact sponsor : toria_dickson (Telegram) ; support technique : Discord Panta `#dev-chat`.
 - Concurrence au 08/10 : **30 soumissions** sur la listing.
 - Gagnants annoncés au plus tard le 27/10.
+
+
+## Liens publics (08/10/2026)
+- App live : https://panta.168-231-106-101.sslip.io
+- Vidéo démo (33 s) : https://panta.168-231-106-101.sslip.io/demo/panta-pulse-demo.mp4
+- Code : https://github.com/mjneuroart/panta-pulse

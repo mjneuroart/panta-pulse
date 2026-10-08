@@ -61,3 +61,9 @@ Mike-Jeason Leca — solo builder. Jeason Studio, Paris (AI-native production st
 5. "1 · Quote — real USDC fee from the live Panta API."
 6. "2 · Build — unsigned transaction; the wallet signs, then register verifies on-chain."
 7. "Built for the Panta API Sidetrack · Powered by Panta."
+
+
+## Liens publics (08/10/2026)
+- App live : https://panta.168-231-106-101.sslip.io
+- Vidéo démo (33 s) : https://panta.168-231-106-101.sslip.io/demo/panta-pulse-demo.mp4
+- Code : https://github.com/mjneuroart/panta-pulse
